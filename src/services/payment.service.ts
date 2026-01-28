@@ -3,7 +3,7 @@ import { query } from "../config/database";
 import { z } from "zod";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-11-20.acacia",
+  apiVersion: "2023-10-16",
 });
 
 export const createPaymentIntentSchema = z.object({
@@ -99,7 +99,7 @@ export const paymentService = {
         "UPDATE orders SET payment_status = 'paid', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
         [payment.order_id]
       );
-    } else if (paymentIntent.status === "payment_failed") {
+    } else if ((paymentIntent.status as string) === "payment_failed") {
       await query(
         "UPDATE orders SET payment_status = 'failed', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
         [payment.order_id]
